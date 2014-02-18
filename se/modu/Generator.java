@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-
+/**
+ * A brothel generator that can be used in RPG's. Made after a request from Tarradax
+ * using the rules listed at http://rpgcharacters.wordpress.com/2009/09/23/random-house-of-ill-repute/
+ * which I think is some D&D thing, but I'm not sure.
+ */
 public class Generator {
 	
-
-	//public ArrayList<String> businessName;
 	public String businessName[] = {"Bordello of",
 			"Parlour of",
 			"Den of",
@@ -19,7 +21,7 @@ public class Generator {
 			"Garden of",
 			"Brothel of",
 			"Haven of",
-			"Grand (Roll again)",
+			"Grand (Roll again)", // should never show up in the full form
 			"Chateu of",
 			"Temple of",
 			"Home of",
@@ -28,9 +30,9 @@ public class Generator {
 			"Dress-House of",
 			"Shrine of",
 			"Madam <Name>'s",
-			"<Name>'s",
-			"<Name>'s",
-			"Reverse 1&2"};
+			"<Name>'s", // should never show up
+			"<Name>'s", // should never show up
+			"Reverse 1&2"}; // should never show up
 	public String businessName2[] = {"a Dozen",
 			"Countless",
 			"Silent",
@@ -80,8 +82,12 @@ public class Generator {
 	private List<String> specialties;
 	private ArrayList<Integer> ignoreList = new ArrayList<Integer>(); // ugly solution, used for the specialties
 	
+	
+	/**
+	 * Creates a new instance of a brothel and generates its descriptions
+	 * @param charName name of the character running the brothel.
+	 */
 	public Generator(String charName){
-		
 		rand = new Random();
 		name = genName(charName,new ArrayList<Integer>());
 		qualityAndPrice = qualityAndPrice();
@@ -89,7 +95,12 @@ public class Generator {
 		noOfCourtesans = noOfCourtesans(size); 
 		specialties = specialties();
 	}
-	
+	/**
+	 * Generates the name for the brothel
+	 * @param charName name of the character that should run the brothel
+	 * @param ignoreList a list of alternatives that can't come up, should preferably be an empty list
+	 * @return returns the name of the brothel
+	 */
 	private String genName(String charName, ArrayList<Integer> ignoreList){
 		
 		String name = "";
@@ -101,8 +112,6 @@ public class Generator {
 		while(ignoreList.contains(d20)){
 			d20 = rand.nextInt(20);
 		}
-		//System.out.println("Debug d20: "+d20);
-		//System.out.println("Debug d20_2: "+d20_2);
 		if(d20 ==  8){
 			ignoreList.add(d20);
 			name = "Grand "+genName(charName, ignoreList);
@@ -124,7 +133,10 @@ public class Generator {
 		return name;
 	}
 	
-	
+	/**
+	 * Rolls the quality of the brothel and how it affects the price
+	 * @return string describing the brothels quality and it's price modifier.
+	 */
 	private String qualityAndPrice(){
 		int d4_1 = rand.nextInt(4)+1;
 		int d4_2 = rand.nextInt(4)+1;
@@ -144,6 +156,10 @@ public class Generator {
 		return "5-Star Accomodations (x 10)"; // if it reaches here it should be 8
 	}
 	
+	/**
+	 * Rolls and decides the building type of the brothel.
+	 * @return a string describing the brothel.
+	 */
 	private String sizeOfBrothel(){
 		int d4_1 = rand.nextInt(4)+1;
 		int d4_2 = rand.nextInt(4)+1;
@@ -164,12 +180,18 @@ public class Generator {
 	}
 	
 	
-	/*
-	 * This could be done differently, but I like sending it as an argument with
-	 * the string, otherwise we could store the previous roll as an int or whatever,
-	 * but this is good enough
-	*/
+	/**
+	 * Rolls and decide how many courtesans the establisment has.
+	 * 
+	 * @param buildingType what type of building the courtesans inhabit
+	 * @return the number of courtesans in the building
+	 */
 	private int noOfCourtesans(String buildingType){
+		/*
+		 * This could be done differently, but I like sending it as an argument with
+		 * the string, otherwise we could store the previous roll as an int or whatever,
+		 * but this is good enough
+		*/
 		if(buildingType.equals("Single Room")){
 			return rand.nextInt(2)+1; // 1d2
 		} else if(buildingType.equals("Two Room House")){
@@ -186,7 +208,10 @@ public class Generator {
 		// if it gets this far, the result should be mansion:
 		return rand.nextInt(20)+1+rand.nextInt(20)+1; // 2d20
 	}
-
+	/**
+	 * Generate a list of specialties for the brothel.
+	 * @return a list with strings of specialties
+	 */
 	private List<String> specialties(){
 		ArrayList<String> list = new ArrayList<String>();
 		int d8_1 = rand.nextInt(8)+1;
@@ -199,14 +224,12 @@ public class Generator {
 		if(d8 == 2){
 			ignoreList.add(2);
 			ignoreList.add(3);// according to tarra
-			System.out.println("DEBUG: ROLLING THREE MORE TIMES");
 			list.addAll(specialties());
 			list.addAll(specialties());
 			list.addAll(specialties());
 		} else if (d8 == 3){
 			ignoreList.add(2);
 			ignoreList.add(3);// according to tarra
-			System.out.println("DEBUG: ROLLING TWO MORE TIMES");
 			list.addAll(specialties());
 			list.addAll(specialties());
 		} else if(d8 == 4){
@@ -246,7 +269,7 @@ public class Generator {
 			ignoreList.add(15);
 			int d4_3 = rand.nextInt(4)+1;
 			int d4_4 = rand.nextInt(4)+1;
-			list.add("Unspeakable Acts (x"+(d4_3+d4_4)+")"); // ask tarra about, roll?
+			list.add("Unspeakable Acts (x"+(d4_3+d4_4)+")");
 		} else if(d8 == 16){
 			ignoreList.add(16);
 			list.add("Torture & Murder (x50)");
@@ -254,6 +277,9 @@ public class Generator {
 		return list;
 	}
 	
+	/**
+	 * Prints the generated data.
+	 */
 	public void print(){
 		System.out.println("Name: " + name);
 		System.out.println("Quality and price: "+qualityAndPrice);
